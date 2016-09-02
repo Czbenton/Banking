@@ -11,9 +11,6 @@ public class Main {
         while (b)
             atm.menuSelect();
     }
-                            // IF i put a end program case, then can I loop atm.menuSelect infinite??
-
-
     private static boolean cancelIsNotSelected() {
         return atm.option == null || ! atm.option.equals("3");
     }

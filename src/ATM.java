@@ -17,43 +17,59 @@ public class ATM {
     }
 
     public void homeScreen() throws Exception{
-        System.out.println("Welcome to Benton's Bank!!\nPlease enter your name.");
+        System.out.println("Welcome to Gringotts Wizarding Bank!!\nWhat is your name?");
         name = Main.scanner.nextLine();
+        if(name.length() > 0) {
         accountExists = accountInfo.containsKey(name);
 
-        if ( accountExists ) {
+            if ( accountExists ) {
             System.out.println("Welcome " + name + ".");
             menuSelect();
+            }
+            else {
+                createAccount();
+            }
         }
         else {
-            createAccount();
+            System.out.println("Please enter a valid name\n");
+            homeScreen();
         }
     }
 
     public void menuSelect() throws Exception {
-        System.out.println("Please enter the number of your selection: \n 1. Check Balance  2. Withdraw Funds  3. Cancel");
+        System.out.println("What would you like to do?:" +
+                "\n 1. Check Balance  2. Withdraw Funds  3. Deposit Funds  4. Cancel  5. DELETE ACCOUNT");
         boolean a = true;
+        boolean b = true;
 
         option = Main.scanner.nextLine();
 
         switch (option) {
-            case "1" : System.out.println("Your current balance is $" + accountInfo.get(name));
+            case "check balance" :
+            case "1" : System.out.println("Your current balance is " + accountInfo.get(name) + " Galleons.");
                 menuSelect();
                 break;
+            case "withdraw funds" :
             case "2" :
                 while (a) {
                     a = withdrawFunds();
                 }
                 menuSelect();
                 break;
-            case "3" : System.out.println("Transaction canceled. Please come again.\n");
-                homeScreen(); //this takes user2 back to homescreen to run that method one more time. but at that point menuSelect has already run once in main...
+            case "cancel" :
+            case "4" : System.out.println("Transaction canceled. See you next time.\n");
+                homeScreen();
                 break;
-            case "4" :
-                // deposit funds
+            case "deposit" :
+            case "3" :
+                while (b) {
+                   b = depositFunds();
+                }
+                menuSelect();
                 break;
+            case "delete account" :
             case "5" :
-                // end program
+                deleteAccount();
                 break;
             default: menuSelect();
         }
@@ -69,18 +85,18 @@ public class ATM {
         if(amountInput < accountInfo.get(name)){
             balance = accountInfo.get(name) - amountInput;
             accountInfo.replace(name, balance);
-            System.out.println("Please take your money. \nYour remaining balance is $" + balance);
+            System.out.println("Here is your money. \nYour current remaining balance is " + balance + " Galleons.");
             a = false;
         }
         else {
-            System.out.println("Insufficient Funds!!");
+            System.out.println("Do not attempt to fool the Gringotts Goblins. Enter a valid amount to be withdrawn.");
         }
         return a;
     }
 
     public void createAccount() throws Exception{
-        System.out.println("That account name is not recognized.\nWould you like to create an account? [Yes/No]");
-        Double numOption = new Double(0);  //this is set to zero so that the while loop automaticall starts without the user input
+        System.out.println("That name is not in our records.\nWould you like to create an account? [Yes/No]");
+        Double numOption = new Double(0);
         option = Main.scanner.nextLine();
         if(option.equalsIgnoreCase("yes")){
             while (numOption <= 0) {
@@ -89,14 +105,45 @@ public class ATM {
                 numOption = validatePositiveDouble();
             }
             accountInfo.put(name, numOption);
-
-
         }
         else{
-            System.out.println("Maybe next time. Please come again. \nNEW SESSION\n");
+            System.out.println("Maybe next time... Please come again. \n\nNEW SESSION\n");
             homeScreen();
         }
+    }
 
+    public void deleteAccount() throws Exception{
+        System.out.println("This will destroy all records of your account at Gringotts. Please make certain you have withdrawn all your funds before continuing.\n" +
+                "Are you sure you want to delete your account? [Yes/No]");
+        option = Main.scanner.nextLine();
+        if(option.equalsIgnoreCase("yes")){
+            System.out.println("Your account has been DELETED!!");
+            accountInfo.remove(name);
+            homeScreen();
+        }
+        else{
+            System.out.println("Your account has NOT been deleted.");
+            menuSelect();
+        }
+    }
+
+    public boolean depositFunds() {
+        Double amountInput = new Double(0);
+        boolean b = true;
+        System.out.println("Please enter the amount to be deposited.");
+        while (amountInput <= 0) {
+            amountInput = validatePositiveDouble();
+        }
+        if(amountInput >=0) {
+            balance = accountInfo.get(name) + amountInput;
+            accountInfo.replace(name, balance);
+            System.out.println("Deposit complete. \nYour new balance is $" + balance);
+            b = false;
+        }
+        else {
+            System.out.println("Please enter a valid amount for the deposit.");
+        }
+        return b;
     }
 
     public Double validatePositiveDouble() {
@@ -108,7 +155,5 @@ public class ATM {
         }
         return numOption;
     }
-
-
 
 }
