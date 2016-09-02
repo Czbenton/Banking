@@ -5,7 +5,7 @@ import java.util.HashMap;
  */
 public class ATM {
     public String name;
-    public double balance = 100;
+    public double balance;
     public String menuInput;
     public String option;
     boolean accountExists;
@@ -17,12 +17,12 @@ public class ATM {
     }
 
     public void homeScreen() throws Exception{
-        System.out.println("Please enter your name.");
+        System.out.println("Welcome to Benton's Bank!!\nPlease enter your name.");
         name = Main.scanner.nextLine();
         accountExists = accountInfo.containsKey(name);
 
         if ( accountExists ) {
-            System.out.println("Thank you");
+            System.out.println("Welcome " + name + ".");
             menuSelect();
         }
         else {
@@ -32,6 +32,7 @@ public class ATM {
 
     public void menuSelect() throws Exception {
         System.out.println("Please enter the number of your selection: \n 1. Check Balance  2. Withdraw Funds  3. Cancel");
+        boolean a = true;
 
         option = Main.scanner.nextLine();
 
@@ -40,46 +41,55 @@ public class ATM {
                 menuSelect();
                 break;
             case "2" :
-                try {
-                    withdrawFunds();
-                } catch (Exception e) {
-                    System.out.println("Input Error: " + e.getMessage());
+                while (a) {
+                    a = withdrawFunds();
                 }
-                withdrawFunds();
+                menuSelect();
                 break;
-            case "3" : System.out.println("Please come again.");
-                homeScreen();
+            case "3" : System.out.println("Transaction canceled. Please come again.\n");
+                homeScreen(); //this takes user2 back to homescreen to run that method one more time. but at that point menuSelect has already run once in main...
+                break;
+            case "4" :
+                // deposit funds
+                break;
+            case "5" :
+                // end program
                 break;
             default: menuSelect();
         }
-
     }
 
-
-    public void withdrawFunds() throws Exception {
-        double amountInput;
+    public boolean withdrawFunds() {
+        Double amountInput = new Double(0);
+        boolean a = true;
         System.out.println("Please enter the amount to be withdrawn.");
-        amountInput = Double.parseDouble(Main.scanner.nextLine());
+        while (amountInput <= 0) {
+            amountInput = validatePositiveDouble();
+        }
         if(amountInput < accountInfo.get(name)){
             balance = accountInfo.get(name) - amountInput;
             accountInfo.replace(name, balance);
             System.out.println("Please take your money. \nYour remaining balance is $" + balance);
-            menuSelect();
+            a = false;
         }
         else {
-            throw new Exception("Insufficient Funds!!");
+            System.out.println("Insufficient Funds!!");
         }
+        return a;
     }
 
     public void createAccount() throws Exception{
-        System.out.println("That account name is not recognized. Would you like to create an account? [Yes/No]");
+        System.out.println("That account name is not recognized.\nWould you like to create an account? [Yes/No]");
+        Double numOption = new Double(0);  //this is set to zero so that the while loop automaticall starts without the user input
         option = Main.scanner.nextLine();
         if(option.equalsIgnoreCase("yes")){
-            //add option to accountInfo hashmap
-            accountInfo.put(name,0.0);
-            System.out.println("Please enter the amount you want to deposit, including the decimal.\nExample: 25.00");
-            double numOption = Double.parseDouble(Main.scanner.nextLine());
+            while (numOption <= 0) {
+                System.out.println("Your account has been created! Welcome " + name +
+                        ".\nPlease enter the amount you wish to deposit into your new account.");
+                numOption = validatePositiveDouble();
+            }
             accountInfo.put(name, numOption);
+
 
         }
         else{
@@ -89,6 +99,15 @@ public class ATM {
 
     }
 
+    public Double validatePositiveDouble() {
+        Double numOption = new Double(0);
+        try {
+            numOption = Double.parseDouble(Main.scanner.nextLine());
+        } catch (Exception wrongNumber) {
+            System.out.println("Please Enter a valid amount.");
+        }
+        return numOption;
+    }
 
 
 

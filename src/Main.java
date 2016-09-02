@@ -6,14 +6,13 @@ public class Main {
     static ATM atm = new ATM();
 
     public static void main(String[] args) throws Exception {
-
+        boolean b = true;
         atm.homeScreen();
-//        while ( cancelIsNotSelected() ) {
-//            atm.menuSelect();
-//        }
-        atm.menuSelect();
-
+        while (b)
+            atm.menuSelect();
     }
+                            // IF i put a end program case, then can I loop atm.menuSelect infinite??
+
 
     private static boolean cancelIsNotSelected() {
         return atm.option == null || ! atm.option.equals("3");
