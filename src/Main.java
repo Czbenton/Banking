@@ -8,9 +8,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         atm.homeScreen();
-        while ( cancelIsNotSelected() ) {
-            atm.menuSelect();
-        }
+//        while ( cancelIsNotSelected() ) {
+//            atm.menuSelect();
+//        }
+        atm.menuSelect();
 
     }
 
