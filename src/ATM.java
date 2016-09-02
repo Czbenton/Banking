@@ -79,9 +79,8 @@ public class ATM {
         Double amountInput = new Double(0);
         boolean a = true;
         System.out.println("Please enter the amount to be withdrawn.");
-        while (amountInput <= 0) {
-            amountInput = validatePositiveDouble();
-        }
+
+        amountInput = scanValidDouble();
         if(amountInput < accountInfo.get(name)){
             balance = accountInfo.get(name) - amountInput;
             accountInfo.replace(name, balance);
@@ -102,7 +101,7 @@ public class ATM {
             while (numOption <= 0) {
                 System.out.println("Your account has been created! Welcome " + name +
                         ".\nPlease enter the amount you wish to deposit into your new account.");
-                numOption = validatePositiveDouble();
+                numOption = scanValidDouble();
             }
             accountInfo.put(name, numOption);
         }
@@ -132,7 +131,7 @@ public class ATM {
         boolean b = true;
         System.out.println("Please enter the amount to be deposited.");
         while (amountInput <= 0) {
-            amountInput = validatePositiveDouble();
+            amountInput = scanValidDouble();
         }
         if(amountInput >=0) {
             balance = accountInfo.get(name) + amountInput;
@@ -146,12 +145,17 @@ public class ATM {
         return b;
     }
 
-    public Double validatePositiveDouble() {
+    public Double scanValidDouble() {
         Double numOption = new Double(0);
-        try {
-            numOption = Double.parseDouble(Main.scanner.nextLine());
-        } catch (Exception wrongNumber) {
-            System.out.println("Please Enter a valid amount.");
+        while (numOption <= 0) {
+            try {
+                numOption = Double.parseDouble(Main.scanner.nextLine());
+                if (numOption <= 0) {
+                    throw new Exception();
+                }
+            } catch (Exception wrongNumber) {
+                System.out.println("Please Enter a valid amount.");
+            }
         }
         return numOption;
     }
