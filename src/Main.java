@@ -10,8 +10,8 @@ public class Main {
 
         while (true) {
 
-            if (atm.option.equals("4")) {
-                atm.name = ""; //clear name before running .homescreen again
+            if (atm.isTxnFinished()) {
+                atm.name = "";
                 atm.homeScreen();
             }
             atm.menuSelect();

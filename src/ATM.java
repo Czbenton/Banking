@@ -1,19 +1,24 @@
 import java.util.HashMap;
+
 /**
  * Created by Zach on 8/31/16.
  */
 public class ATM {
+    final static String TXN_FINISHED = "4";
     public String name = "";
     public double balance;
-    public String option = "4";  //default to Start
+    public String option = TXN_FINISHED;  //default to Start
     HashMap<String, Double> accountInfo = new HashMap<>();
 
     public ATM() {
         accountInfo.put("Zach", 500.00);
     }
 
-    public void homeScreen() throws Exception {
+    public boolean isTxnFinished() {
+        return option.equals(TXN_FINISHED);
+    }
 
+    public void homeScreen() throws Exception {
         System.out.println("Welcome to Gringotts Wizarding Bank!!\nWhat is your name?");
         while (name.isEmpty()) {
             name = Main.scanner.nextLine();
@@ -22,63 +27,65 @@ public class ATM {
                 System.out.println("Please enter a valid name\n");
             }
         }
-
         if (accountInfo.containsKey(name)) {
             System.out.println("Welcome " + name + ".");
-
         } else {
             createAccount();
         }
     }
 
     public void menuSelect() throws Exception {
+        boolean cancel = false;
 
-        System.out.println("What would you like to do?:" +
-                "\n 1. Check Balance  2. Withdraw Funds  3. Deposit Funds  4. Cancel  5. DELETE ACCOUNT");
-        boolean a = true;
-        boolean b = true;
+        while (!cancel) {
+            System.out.println("What would you like to do?:" +
+                    "\n 1. Check Balance  2. Withdraw Funds  3. Deposit Funds  4. Cancel  5. DELETE ACCOUNT");
+            option = Main.scanner.nextLine();
+            boolean a = true;
+            boolean b = true;
 
-        option = Main.scanner.nextLine();
-
-        switch (option) {
-            case "check balance":
-            case "1":
-                System.out.println("Your current balance is " + accountInfo.get(name) + " Galleons.");
-                menuSelect();
-                break;
-            case "withdraw funds":
-            case "2":
-                while (a) {
-                    a = withdrawFunds();
-                }
-                menuSelect();
-                break;
-            case "cancel":
-            case "4":
-                System.out.println("Transaction canceled. See you next time.\n");
-                break;
-            case "deposit funds":
-            case "3":
-                while (b) {
-                    b = depositFunds();
-                }
-                menuSelect();
-                break;
-            case "delete account":
-            case "5":
-                deleteAccount();
-                break;
-            default:
-                System.out.println("Please enter valid option.");
-                menuSelect();
+            switch (option.toLowerCase()) {
+                case "check balance":
+                case "1":
+                    System.out.println("Your current balance is " + accountInfo.get(name) + " Galleons.");
+                    break;
+                case "withdraw funds":
+                case "2":
+                    while (a) {
+                        a = withdrawFunds();
+                    }
+                    break;
+                case "cancel":
+                case "4":
+                    System.out.println("Transaction canceled. See you next time.\n");
+                    cancel = true;
+                    break;
+                case "deposit funds":
+                case "3":
+                    while (b) {
+                        b = depositFunds();
+                    }
+                    break;
+                case "delete account":
+                case "5":
+                    deleteAccount();
+                    break;
+                case "/exit":
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Please enter valid option.");
+            }
         }
     }
 
     public boolean withdrawFunds() {
 
-        double amountInput = new Double(0);
+        double amountInput;
         boolean a = true;
+
         System.out.println("Please enter the amount to be withdrawn.");
+
         amountInput = scanValidDouble();
 
         if (amountInput < accountInfo.get(name)) {
@@ -96,15 +103,14 @@ public class ATM {
 
     public void createAccount() throws Exception {
 
-        System.out.println("That name is not in our records.\nWould you like to create an account? [Yes/No]");
+        System.out.println("That name is not in our record books.\nWould you like to create an account? [Yes/No]");
         Double numOption = new Double(0);
         boolean runSwitchAgain = true;
         option = Main.scanner.nextLine();
 
-        while (runSwitchAgain) {    //while true, set to false, then select case. if default, set back to true and select case again.
+        while (runSwitchAgain) {
             runSwitchAgain = false;
-            switch (option) {
-                case "Yes":
+            switch (option.toLowerCase()) {
                 case "yes":
                     while (numOption <= 0) {
                         System.out.println("Your account has been created! Welcome " + name +
@@ -113,7 +119,6 @@ public class ATM {
                     }
                     accountInfo.put(name, numOption);
                     break;
-                case "No":
                 case "no":
                     System.out.println("Maybe next time... Please come again. \n\nNEW SESSION\n");
                     name = "";
@@ -132,20 +137,18 @@ public class ATM {
 
         System.out.println("This will destroy all records of your account at Gringotts. Please make certain you have withdrawn" +
                 " all your funds before continuing.\n" + "Are you sure you want to delete your account? [Yes/No]");
-        option = Main.scanner.nextLine();
         boolean runSwitchAgain = true;
+        option = Main.scanner.nextLine();
 
         while (runSwitchAgain) {
             runSwitchAgain = false;
-            switch (option) {
-                case "Yes":
+            switch (option.toLowerCase()) {
                 case "yes":
                     System.out.println("Your account has been DELETED!!\n");
                     accountInfo.remove(name);
                     name = "";
                     homeScreen();
                     break;
-                case "No":
                 case "no":
                     System.out.println("Your account has NOT been deleted.");
                     menuSelect();
@@ -163,7 +166,9 @@ public class ATM {
 
         Double amountInput = new Double(0);
         boolean b = true;
+
         System.out.println("Please enter the amount to be deposited.");
+
         while (amountInput <= 0) {
             amountInput = scanValidDouble();
         }
@@ -187,8 +192,8 @@ public class ATM {
                 if (numOption <= 0) {
                     throw new Exception();
                 }
-            } catch (Exception wrongNumber) {
-                System.out.println("Please Enter a valid amount.");
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage() + "\nPlease Enter a valid amount.");
             }
         }
         return numOption;
